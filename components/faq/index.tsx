@@ -26,7 +26,14 @@ const faqData = [
   },
 ];
 
-const FaqItem = ({ question, answer, isOpen, onClick }) => {
+interface FaqItemProps {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onClick: () => void;
+}
+
+const FaqItem = ({ question, answer, isOpen, onClick }: FaqItemProps) => {
   return (
     <motion.div 
       layout 
@@ -159,7 +166,7 @@ const Faq = () => {
                 </span>
               </div>
               <p className="text-sm text-gray-500">
-                Can't find what you're looking for? Reach out via WhatsApp for a
+                Can&apos;t find what you&apos;re looking for? Reach out via WhatsApp for a
                 faster response.
               </p>
             </div>
