@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaArrowRight, FaEye } from "react-icons/fa";
@@ -20,6 +20,7 @@ type Project = {
   hasLivePreview: boolean;
 };
 
+// --- Data Projects ---
 const projects: Project[] = [
   {
     id: 1,
@@ -101,7 +102,7 @@ const projects: Project[] = [
 ];
 
 // --- Sub-Component: Project Card ---
-const ProjectCard = React.memo(({ project, onOpen }: { project: Project; onOpen: (p: Project) => void }) => {
+const ProjectCard = memo(({ project, onOpen }: { project: Project; onOpen: (p: Project) => void }) => {
   const sizeClasses = {
     large: "md:col-span-2 md:row-span-2 h-[400px] md:h-[600px]",
     medium: "md:col-span-1 md:row-span-2 h-[400px] md:h-[600px]",
@@ -112,8 +113,10 @@ const ProjectCard = React.memo(({ project, onOpen }: { project: Project; onOpen:
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }} 
-      className={`relative group rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm will-change-transform ${sizeClasses[project.size]}`}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      // PERBAIKAN: Hapus border-zinc-800, gunakan shadow dan ring-0 untuk menghilangkan garis hitam
+      className={`relative group rounded-3xl overflow-hidden bg-zinc-900 shadow-lg transform-gpu will-change-transform outline-none focus:outline-none ring-0 focus:ring-0 ${sizeClasses[project.size]}`}
     >
       <div className="relative w-full h-full overflow-hidden">
         <Image
@@ -121,15 +124,16 @@ const ProjectCard = React.memo(({ project, onOpen }: { project: Project; onOpen:
           alt={project.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform"
           priority={project.id <= 2}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
+        {/* Overlay gradient tanpa border */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-300" />
       </div>
 
       <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end text-white">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-[10px] font-bold tracking-[0.2em] uppercase bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10">
+          <span className="text-[10px] font-bold tracking-[0.2em] uppercase bg-white/10 px-3 py-1 rounded-full border border-white/5 backdrop-blur-md">
             {project.category}
           </span>
         </div>
@@ -141,7 +145,8 @@ const ProjectCard = React.memo(({ project, onOpen }: { project: Project; onOpen:
           </div>
           <button
             onClick={() => onOpen(project)}
-            className="flex items-center justify-center bg-white text-black px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-gray-200"
+            type="button"
+            className="flex items-center justify-center bg-white text-black px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-zinc-200 active:scale-90 outline-none focus:outline-none ring-0 border-none"
           >
             Details
           </button>
@@ -153,11 +158,11 @@ const ProjectCard = React.memo(({ project, onOpen }: { project: Project; onOpen:
 
 ProjectCard.displayName = "ProjectCard";
 
+// --- Main Component ---
 export default function BentoProjects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
-  // Optimasi lock scroll
   useEffect(() => {
     if (selectedProject || isPreviewOpen) {
       document.body.style.overflow = "hidden";
@@ -166,20 +171,21 @@ export default function BentoProjects() {
     }
   }, [selectedProject, isPreviewOpen]);
 
-  // Handle escape key
+  const handleClose = useCallback(() => {
+    setIsPreviewOpen(false);
+    setSelectedProject(null);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsPreviewOpen(false);
-        setSelectedProject(null);
-      }
+      if (e.key === "Escape") handleClose();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [handleClose]);
 
   return (
-    <section id="projects" className="py-24 md:py-32 bg-white">
+    <section id="projects" className="py-24 md:py-32 bg-white overflow-hidden">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
@@ -189,78 +195,103 @@ export default function BentoProjects() {
               viewport={{ once: true }}
               className="flex items-center gap-3 mb-4"
             >
-              <div className="w-12 h-[1px] bg-gray-300" />
-              <span className="text-gray-400 text-xs font-black uppercase tracking-widest">Selected Work</span>
+              <div className="w-12 h-[1px] bg-zinc-300" />
+              <span className="text-zinc-400 text-xs font-black uppercase tracking-widest">
+                Selected Work
+              </span>
             </motion.div>
             <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-black leading-[0.85] uppercase">
-              Crafting <br /> <span className="text-gray-300 italic font-serif lowercase">Projects.</span>
+              Crafting <br />{" "}
+              <span className="text-zinc-200 italic font-serif lowercase">
+                Projects.
+              </span>
             </h2>
           </div>
         </div>
 
+        {/* Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-min">
           {projects.map((project) => (
-            <ProjectCard key={project.id} project={project} onOpen={setSelectedProject} />
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onOpen={setSelectedProject}
+            />
           ))}
         </div>
 
+        {/* Modal Project Detail */}
         <AnimatePresence>
           {selectedProject && (
-            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6">
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setSelectedProject(null)}
+                onClick={handleClose}
                 className="absolute inset-0 bg-black/90 backdrop-blur-sm"
               />
 
               <motion.div
-                layoutId={`project-${selectedProject.id}`} 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="relative bg-white w-full max-w-5xl rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh]"
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="relative bg-white w-full max-w-5xl rounded-[2rem] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh] border-none outline-none ring-0"
               >
                 <button
-                  onClick={() => setSelectedProject(null)}
+                  onClick={handleClose}
                   type="button"
                   aria-label="Close"
-                  className="absolute top-6 right-6 z-30 p-2.5 bg-neutral-900 text-white rounded-full hover:rotate-90 transition-all duration-300"
+                  className="absolute top-6 right-6 z-50 p-3 bg-zinc-900 text-white rounded-full hover:rotate-90 transition-all duration-300 shadow-xl border-none outline-none focus:outline-none ring-0"
                 >
-                  <X size={18} />
+                  <X size={20} />
                 </button>
 
-                <div className="relative w-full md:w-3/5 h-64 md:h-auto group overflow-hidden bg-gray-100">
+                {/* Bagian Gambar Modal */}
+                <div className="relative w-full md:w-3/5 h-64 md:h-auto group overflow-hidden bg-zinc-100 border-none">
                   <Image
                     src={selectedProject.imageSrc}
                     alt={selectedProject.title}
                     fill
-                    className="object-cover"
-                    sizes="60vw"
+                    className="object-cover border-none"
                   />
                   <div
                     onClick={() => setIsPreviewOpen(true)}
-                    className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
                   >
-                    <div className="bg-white/90 p-4 rounded-full text-black">
+                    <div className="bg-white/90 p-4 rounded-full text-black border-none shadow-lg">
                       <FaEye size={24} />
                     </div>
                   </div>
                 </div>
 
-                <div className="w-full md:w-2/5 p-8 md:p-12 flex flex-col justify-center overflow-y-auto">
-                  <span className="text-[10px] font-black tracking-[0.4em] uppercase text-gray-400 mb-4 block">{selectedProject.category}</span>
-                  <h3 className="text-3xl md:text-5xl font-black tracking-tighter text-black uppercase mb-6 leading-[0.9]">{selectedProject.title}</h3>
-                  <p className="text-gray-600 text-sm mb-10 leading-relaxed">{selectedProject.description}</p>
-                  
+                {/* Bagian Info Modal */}
+                <div className="w-full md:w-2/5 p-8 md:p-12 flex flex-col justify-center overflow-y-auto bg-white">
+                  <span className="text-[10px] font-black tracking-[0.4em] uppercase text-zinc-400 mb-4 block">
+                    {selectedProject.category}
+                  </span>
+                  <h3 className="text-3xl md:text-4xl font-black tracking-tighter text-black uppercase mb-6 leading-none">
+                    {selectedProject.title}
+                  </h3>
+                  <p className="text-zinc-600 text-sm mb-10 leading-relaxed">
+                    {selectedProject.description}
+                  </p>
+
                   <div className="flex flex-col gap-3">
                     {selectedProject.hasLivePreview && (
-                      <Link href={selectedProject.link} target="_blank" className="flex items-center justify-center gap-3 bg-black text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition-all">
+                      <Link
+                        href={selectedProject.link}
+                        target="_blank"
+                        className="flex items-center justify-center gap-3 bg-black text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all border-none outline-none ring-0"
+                      >
                         Live Preview <ExternalLink size={14} />
                       </Link>
                     )}
-                    <Link href={selectedProject.codeLink || "#"} target="_blank" className="flex items-center justify-center gap-3 border-2 border-gray-100 text-black py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all">
+                    <Link
+                      href={selectedProject.codeLink || "#"}
+                      target="_blank"
+                      className="flex items-center justify-center gap-3 border border-zinc-100 text-black py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-zinc-50 transition-all outline-none ring-0"
+                    >
                       <Code2 size={16} /> View Code
                     </Link>
                   </div>
@@ -270,7 +301,7 @@ export default function BentoProjects() {
           )}
         </AnimatePresence>
 
-        {/* Modal Lightbox terpisah untuk performa */}
+        {/* Full Image Preview */}
         <AnimatePresence>
           {isPreviewOpen && selectedProject && (
             <motion.div
@@ -278,34 +309,41 @@ export default function BentoProjects() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsPreviewOpen(false)}
-              className="fixed inset-0 z-[10001] flex flex-col items-center justify-center bg-black/95 p-4"
+              className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-black/95 p-4 md:p-12 border-none outline-none ring-0"
             >
               <motion.div 
-                initial={{ scale: 0.9 }} 
-                animate={{ scale: 1 }} 
-                className="relative w-full max-w-4xl h-[70vh]"
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="relative w-full h-full max-w-6xl border-none outline-none ring-0"
                 onClick={(e) => e.stopPropagation()}
               >
                 <Image
                   src={selectedProject.imageSrc}
                   alt="Full Preview"
                   fill
-                  className="object-contain"
+                  className="object-contain border-none"
                 />
               </motion.div>
-              <p className="text-white/50 text-[10px] mt-4 tracking-widest uppercase">Click outside to close</p>
+              <p className="text-zinc-500 text-[10px] mt-6 tracking-[0.3em] uppercase">Click anywhere to close</p>
             </motion.div>
           )}
         </AnimatePresence>
 
+        {/* Footer Link */}
         <div className="flex flex-col items-center mt-20">
-          <Link href="https://github.com/Ardan2008?tab=repositories" target="_blank" className="group flex items-center">
-            <div className="relative mr-6">
-              <span className="text-sm md:text-lg font-black uppercase tracking-[0.3em] text-black">View all projects</span>
-              <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-black" />
+          <Link
+            href="https://github.com/Ardan2008?tab=repositories"
+            target="_blank"
+            className="group flex items-center border-none outline-none focus:outline-none ring-0"
+          >
+            <div className="relative mr-6 border-none">
+              <span className="text-sm md:text-lg font-black uppercase tracking-[0.3em] text-black border-none">
+                View all projects
+              </span>
+              <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-black border-none" />
             </div>
-            <div className="w-14 h-14 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all duration-500 shadow-sm">
-              <FaArrowRight className="group-hover:rotate-[-45deg] transition-transform duration-500" />
+            <div className="w-14 h-14 rounded-full border border-zinc-200 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all duration-500 shadow-sm outline-none ring-0">
+              <FaArrowRight className="group-hover:rotate-[-45deg] transition-transform duration-500 border-none" />
             </div>
           </Link>
         </div>
