@@ -20,7 +20,6 @@ type Project = {
   hasLivePreview: boolean;
 };
 
-// --- Data Projects ---
 const projects: Project[] = [
   {
     id: 1,
@@ -29,10 +28,8 @@ const projects: Project[] = [
     imageSrc: "/assets/project/Healthyroll.png",
     size: "large",
     link: "#",
-    codeLink:
-      "https://github.com/Ardan2008/Healthyroll-Dashboard-Management-System",
-    description:
-      "A comprehensive dashboard for managing products with real-time analytics, inventory tracking, and automated reporting systems built for enterprise scale.",
+    codeLink: "https://github.com/Ardan2008/Healthyroll-Dashboard-Management-System",
+    description: "A comprehensive dashboard for managing products with real-time analytics, inventory tracking, and automated reporting systems built for enterprise scale.",
     hasLivePreview: false,
   },
   {
@@ -43,8 +40,7 @@ const projects: Project[] = [
     size: "medium",
     link: "https://ardan2008.github.io/YooCoffee/",
     codeLink: "https://github.com/Ardan2008/YooCoffee",
-    description:
-      "A responsive coffee shop website built with a focus on modern UI design and structured layout. Featuring menu showcase sections, smooth navigation, and optimized visual hierarchy to enhance user experience.",
+    description: "A responsive coffee shop website built with a focus on modern UI design and structured layout.",
     hasLivePreview: true,
   },
   {
@@ -55,8 +51,7 @@ const projects: Project[] = [
     size: "small",
     link: "#",
     codeLink: "https://github.com/Ardan2008/boe-sportspace-booking",
-    description:
-      "A sports facility reservation platform featuring real-time availability calendars and automated booking confirmations to streamline the scheduling process.",
+    description: "A sports facility reservation platform featuring real-time availability calendars.",
     hasLivePreview: false,
   },
   {
@@ -67,8 +62,7 @@ const projects: Project[] = [
     size: "small",
     link: "https://xrd-crypto.vercel.app/",
     codeLink: "https://github.com/Ardan2008/XrdCrypto",
-    description:
-      "A modern Web3-focused landing page showcasing real-time cryptocurrency insights. Built with Next.js for speed, it features a dark-themed futuristic UI, smooth scroll animations, and a fully responsive layout optimized for financial data visualization.",
+    description: "A modern Web3-focused landing page showcasing real-time cryptocurrency insights.",
     hasLivePreview: true,
   },
   {
@@ -79,8 +73,7 @@ const projects: Project[] = [
     size: "medium",
     link: "https://flowpay-sg8m.vercel.app/",
     codeLink: "https://github.com/Ardan2008/Flowpay",
-    description:
-      "Specialized maintenance dashboard for biological laboratory equipment tracking and scheduled servicing alerts.",
+    description: "Specialized maintenance dashboard for biological laboratory equipment tracking.",
     hasLivePreview: true,
   },
   {
@@ -91,8 +84,7 @@ const projects: Project[] = [
     size: "small",
     link: "https://ardan2008.github.io/vexlo-landing-page/",
     codeLink: "https://github.com/Ardan2008/vexlo-landing-page/tree/main",
-    description:
-      "A high-performance digital agency landing page with a 98+ PageSpeed score. Focused on conversion-centric design, clean UI/UX, and a fully responsive modular architecture.",
+    description: "A high-performance digital agency landing page with a 98+ PageSpeed score.",
     hasLivePreview: true,
   },
   {
@@ -103,20 +95,13 @@ const projects: Project[] = [
     size: "small",
     link: "https://ardan2008.github.io/Novara/",
     codeLink: "https://github.com/Ardan2008/Novara",
-    description: 
-      "High-fidelity mobile UI kit: clean layout, fluid navigation, and fully responsive frontend implementation.",
+    description: "High-fidelity mobile UI kit: clean layout, fluid navigation.",
     hasLivePreview: true,
   },
 ];
 
 // --- Sub-Component: Project Card ---
-function ProjectCard({
-  project,
-  onOpen,
-}: {
-  project: Project;
-  onOpen: (p: Project) => void;
-}) {
+const ProjectCard = React.memo(({ project, onOpen }: { project: Project; onOpen: (p: Project) => void }) => {
   const sizeClasses = {
     large: "md:col-span-2 md:row-span-2 h-[400px] md:h-[600px]",
     medium: "md:col-span-1 md:row-span-2 h-[400px] md:h-[600px]",
@@ -125,40 +110,38 @@ function ProjectCard({
 
   return (
     <motion.div
-      layout
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className={`relative group rounded-3xl overflow-hidden bg-white border border-gray-100 shadow-sm transition-all duration-500 ${sizeClasses[project.size]}`}
+      viewport={{ once: true, margin: "-50px" }} 
+      className={`relative group rounded-3xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm will-change-transform ${sizeClasses[project.size]}`}
     >
       <div className="relative w-full h-full overflow-hidden">
         <Image
           src={project.imageSrc}
           alt={project.title}
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-700 group-hover:scale-105"
+          priority={project.id <= 2}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
       </div>
 
       <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end text-white">
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-[10px] font-bold tracking-[0.2em] uppercase bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+          <span className="text-[10px] font-bold tracking-[0.2em] uppercase bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full border border-white/10">
             {project.category}
           </span>
         </div>
         <div className="flex items-end justify-between gap-4">
           <div className="max-w-[70%]">
-            <h3
-              className={`font-black tracking-tighter leading-none ${project.size === "large" ? "text-3xl md:text-5xl" : "text-xl md:text-2xl"}`}
-            >
+            <h3 className={`font-black tracking-tighter leading-none ${project.size === "large" ? "text-3xl md:text-5xl" : "text-xl md:text-2xl"}`}>
               {project.title}
             </h3>
           </div>
           <button
             onClick={() => onOpen(project)}
-            className="flex items-center justify-center bg-white text-black px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 hover:bg-gray-200"
+            className="flex items-center justify-center bg-white text-black px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 hover:bg-gray-200"
           >
             Details
           </button>
@@ -166,71 +149,61 @@ function ProjectCard({
       </div>
     </motion.div>
   );
-}
+});
 
-// --- Main Component ---
+ProjectCard.displayName = "ProjectCard";
+
 export default function BentoProjects() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
+  // Optimasi lock scroll
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (isPreviewOpen) {
-          setIsPreviewOpen(false);
-        } else {
-          setSelectedProject(null);
-        }
-      }
-    };
-
     if (selectedProject || isPreviewOpen) {
-      window.addEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
     }
-
-    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedProject, isPreviewOpen]);
 
+  // Handle escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsPreviewOpen(false);
+        setSelectedProject(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
-    <section id="projects" className="py-24 md:py-32">
+    <section id="projects" className="py-24 md:py-32 bg-white">
       <div className="container mx-auto px-6">
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
               className="flex items-center gap-3 mb-4"
             >
               <div className="w-12 h-[1px] bg-gray-300" />
-              <span className="text-gray-300 text-xs font-black uppercase tracking-widest">
-                Selected Work
-              </span>
+              <span className="text-gray-400 text-xs font-black uppercase tracking-widest">Selected Work</span>
             </motion.div>
             <h2 className="text-6xl md:text-8xl font-black tracking-tighter text-black leading-[0.85] uppercase">
-              Crafting <br />{" "}
-              <span className="text-gray-300 italic font-serif lowercase">
-                Projects.
-              </span>
+              Crafting <br /> <span className="text-gray-300 italic font-serif lowercase">Projects.</span>
             </h2>
           </div>
         </div>
 
-        {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-min">
           {projects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onOpen={setSelectedProject}
-            />
+            <ProjectCard key={project.id} project={project} onOpen={setSelectedProject} />
           ))}
         </div>
 
-        {/* Modal Logic */}
         <AnimatePresence>
           {selectedProject && (
             <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-6">
@@ -239,141 +212,99 @@ export default function BentoProjects() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedProject(null)}
-                className="absolute inset-0 bg-black/95 backdrop-blur-md"
+                className="absolute inset-0 bg-black/90 backdrop-blur-sm"
               />
 
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative bg-white w-full max-w-5xl rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row"
+                layoutId={`project-${selectedProject.id}`} 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="relative bg-white w-full max-w-5xl rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh]"
               >
                 <button
                   onClick={() => setSelectedProject(null)}
-                  aria-label="Close project details"
-                  title="close"
-                  className="absolute top-6 right-6 z-30 p-2.5 bg-neutral-900 text-white rounded-full 
-                hover:bg-white hover:text-black hover:rotate-90 
-                  hover:shadow-2xl active:scale-75 transition-all duration-500"
+                  type="button"
+                  aria-label="Close"
+                  className="absolute top-6 right-6 z-30 p-2.5 bg-neutral-900 text-white rounded-full hover:rotate-90 transition-all duration-300"
                 >
                   <X size={18} />
                 </button>
 
-                <div className="relative w-full md:w-3/5 h-72 md:h-auto group overflow-hidden bg-gray-100">
+                <div className="relative w-full md:w-3/5 h-64 md:h-auto group overflow-hidden bg-gray-100">
                   <Image
                     src={selectedProject.imageSrc}
                     alt={selectedProject.title}
                     fill
                     className="object-cover"
+                    sizes="60vw"
                   />
                   <div
                     onClick={() => setIsPreviewOpen(true)}
-                    className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer"
+                    className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                   >
-                    <div className="bg-white/90 p-4 rounded-full text-black scale-75 group-hover:scale-100 transition-transform duration-500 shadow-xl">
+                    <div className="bg-white/90 p-4 rounded-full text-black">
                       <FaEye size={24} />
                     </div>
                   </div>
                 </div>
 
-                <div className="w-full md:w-2/5 p-8 md:p-12 flex flex-col justify-center">
-                  <span className="text-[10px] font-black tracking-[0.4em] uppercase text-gray-400 mb-4 block">
-                    {selectedProject.category}
-                  </span>
-                  <h3 className="text-3xl md:text-5xl font-black tracking-tighter text-black uppercase mb-6 leading-[0.9]">
-                    {selectedProject.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm md:text-base mb-10 leading-relaxed">
-                    {selectedProject.description}
-                  </p>
-
+                <div className="w-full md:w-2/5 p-8 md:p-12 flex flex-col justify-center overflow-y-auto">
+                  <span className="text-[10px] font-black tracking-[0.4em] uppercase text-gray-400 mb-4 block">{selectedProject.category}</span>
+                  <h3 className="text-3xl md:text-5xl font-black tracking-tighter text-black uppercase mb-6 leading-[0.9]">{selectedProject.title}</h3>
+                  <p className="text-gray-600 text-sm mb-10 leading-relaxed">{selectedProject.description}</p>
+                  
                   <div className="flex flex-col gap-3">
                     {selectedProject.hasLivePreview && (
-                      <Link
-                        href={selectedProject.link}
-                        target="_blank"
-                        className="group flex items-center justify-center gap-3 bg-black text-white py-4 px-6 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition-all"
-                      >
-                        Live Preview{" "}
-                        <ExternalLink
-                          size={14}
-                          className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
-                        />
+                      <Link href={selectedProject.link} target="_blank" className="flex items-center justify-center gap-3 bg-black text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-gray-800 transition-all">
+                        Live Preview <ExternalLink size={14} />
                       </Link>
                     )}
-
-                    <Link
-                      href={selectedProject.codeLink || "#"}
-                      target="_blank"
-                      className="group flex items-center justify-center gap-3 border-2 border-gray-100 text-black py-4 px-6 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-black hover:text-white hover:border-black transition-all duration-300 shadow-sm hover:shadow-xl"
-                    >
-                      <Code2
-                        size={16}
-                        className="group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300"
-                      />
-                      View Code
+                    <Link href={selectedProject.codeLink || "#"} target="_blank" className="flex items-center justify-center gap-3 border-2 border-gray-100 text-black py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-all">
+                      <Code2 size={16} /> View Code
                     </Link>
                   </div>
                 </div>
               </motion.div>
-
-              {/* Lightbox */}
-              <AnimatePresence>
-                {isPreviewOpen && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setIsPreviewOpen(false)}
-                    className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-black/95 backdrop-blur-3xl"
-                  >
-                    <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ scale: 0.8, opacity: 0 }}
-                      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="relative w-[85vw] h-[75vh] md:w-[65vw] rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-black"
-                    >
-                      <motion.div
-                        className="relative w-full h-full"
-                        whileHover={{ scale: 1.15 }}
-                      >
-                        <Image
-                          src={selectedProject.imageSrc}
-                          alt="Full Preview"
-                          fill
-                          className="object-contain"
-                          priority
-                        />
-                      </motion.div>
-                    </motion.div>
-                    <div className="mt-12 px-8 py-3 bg-white/5 border border-white/10 backdrop-blur-md rounded-full text-[10px] font-mono tracking-[0.4em] text-white/40 uppercase">
-                      Hover to{" "}
-                      <span className="text-white font-bold">Zoom</span> — Click
-                      outside to close
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           )}
         </AnimatePresence>
 
-        {/* Footer View All */}
+        {/* Modal Lightbox terpisah untuk performa */}
+        <AnimatePresence>
+          {isPreviewOpen && selectedProject && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsPreviewOpen(false)}
+              className="fixed inset-0 z-[10001] flex flex-col items-center justify-center bg-black/95 p-4"
+            >
+              <motion.div 
+                initial={{ scale: 0.9 }} 
+                animate={{ scale: 1 }} 
+                className="relative w-full max-w-4xl h-[70vh]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Image
+                  src={selectedProject.imageSrc}
+                  alt="Full Preview"
+                  fill
+                  className="object-contain"
+                />
+              </motion.div>
+              <p className="text-white/50 text-[10px] mt-4 tracking-widest uppercase">Click outside to close</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div className="flex flex-col items-center mt-20">
-          <Link
-            href="https://github.com/Ardan2008?tab=repositories"
-            target="_blank"
-            className="group flex items-center"
-          >
+          <Link href="https://github.com/Ardan2008?tab=repositories" target="_blank" className="group flex items-center">
             <div className="relative mr-6">
-              <span className="text-sm md:text-lg font-black uppercase tracking-[0.3em] text-black">
-                View all projects
-              </span>
+              <span className="text-sm md:text-lg font-black uppercase tracking-[0.3em] text-black">View all projects</span>
               <div className="absolute -bottom-1 left-0 w-full h-[2px] bg-black" />
             </div>
-            <div className="w-14 h-14 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-2xl">
+            <div className="w-14 h-14 rounded-full border border-gray-200 flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all duration-500 shadow-sm">
               <FaArrowRight className="group-hover:rotate-[-45deg] transition-transform duration-500" />
             </div>
           </Link>
