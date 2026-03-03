@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaArrowRight, FaEye } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion"; // Dipakai khusus untuk modal
+import { motion, AnimatePresence } from "framer-motion"; 
 import { X, ExternalLink, Code2 } from "lucide-react";
 
 // --- Types ---
@@ -101,7 +101,7 @@ const projects: Project[] = [
   },
 ];
 
-// --- Sub-Component: Project Card (Tanpa Animasi Motion agar Ringan) ---
+// --- Sub-Component: Project Card ---
 const ProjectCard = memo(({ project, onOpen }: { project: Project; onOpen: (p: Project) => void }) => {
   const sizeClasses = {
     large: "md:col-span-2 md:row-span-2 h-[400px] md:h-[600px]",
@@ -187,7 +187,7 @@ export default function BentoProjects() {
           ))}
         </div>
 
-        {/* Modal Detail Project DENGAN ANIMASI */}
+        {/* Modal Detail Project */}
         <AnimatePresence>
           {selectedProject && (
             <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
@@ -280,7 +280,7 @@ export default function BentoProjects() {
           )}
         </AnimatePresence>
 
-        {/* Full Image Preview DENGAN ANIMASI */}
+        {/* Full Image Preview */}
         <AnimatePresence>
           {isPreviewOpen && selectedProject && (
             <motion.div 
